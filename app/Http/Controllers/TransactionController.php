@@ -31,14 +31,15 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
+
         $user_id = is_numeric(explode('-', $request->reference)[2]) ? (int) explode('-', $request->reference)[2] : null;
         $cart_id = is_numeric(explode('-', $request->reference)[3]) ? (int) explode('-', $request->reference)[3] : null;
         $donation_id = is_numeric(explode('-', $request->reference)[4]) ? (int) explode('-', $request->reference)[4] : null;
         // Check if payment already exists
-        $payment = transaction::where('order_number', $request->orderNumber)->first();
+        $payment = transaction::where('order_number', operator: $request->orderNumber)->first();
         
         // If payment exists
-        if ($payment != null) {
+        // if ($payment != null) {
             $contre = contreventionUser::where('reference', $request->reference)->first();
 
             $contre->update([
@@ -65,28 +66,28 @@ class TransactionController extends Controller
                 ]
             );
             // Otherwise, create new payment
-        } else {
+        // } else {
 
-            $payment = transaction::create([
-                'reference' => $request->reference,
-                'provider_reference' => $request->provider_reference,
-                'order_number' => $request->orderNumber,
-                'amount' => $request->amount,
-                'amount_customer' => $request->amountCustomer,
-                'phone' => $request->phone,
-                'currency' => $request->currency,
-                'chanel' => $request->channel,
-                'created_at' => $request->createdAt,
-                'type_id' => $request->type,
-                'etat' => $request->code
-            ]);
-            return response()->json(
-                [
-                    'reponse' => true,
-                    'msg' => 'Le paiement effectué'
-                ]
-            );
-        }
+        //     $payment = transaction::create([
+        //         'reference' => $request->reference,
+        //         'provider_reference' => $request->provider_reference,
+        //         'order_number' => $request->orderNumber,
+        //         'amount' => $request->amount,
+        //         'amount_customer' => $request->amountCustomer,
+        //         'phone' => $request->phone,
+        //         'currency' => $request->currency,
+        //         'chanel' => $request->channel,
+        //         'created_at' => $request->createdAt,
+        //         'type_id' => $request->type,
+        //         'etat' => $request->code
+        //     ]);
+        //     return response()->json(
+        //         [
+        //             'reponse' => true,
+        //             'msg' => 'Le paiement effectué'
+        //         ]
+        //     );
+        // }
     }
     public function findByPhone($phone_number)
     {
