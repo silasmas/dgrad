@@ -7,15 +7,15 @@
 
         @if (!empty($status_code))
         @if ($status_code == '0')
-        <h1 class="text-success" style="font-size: 5rem;"><span class="bi bi-check-circle"></span></h1>
+        <h1 class="text-success" style="font-size: 5rem;"><span class="fa fa-check-circle"></span></h1>
         @endif
 
         @if ($status_code == '1')
-        <h1 class="text-warning" style="font-size: 5rem;"><span class="bi bi-exclamation-circle"></span></h1>
+        <h1 class="text-warning" style="font-size: 5rem;"><span class="fa fa-exclamation-circle"></span></h1>
         @endif
 
         @if ($status_code == '2')
-        <h1 class="text-danger" style="font-size: 5rem;"><span class="bi bi-x-circle"></span></h1>
+        <h1 class="text-danger" style="font-size: 5rem;"><span class="fa fa-times-circle"></span></h1>
         @endif
         @endif
         <h3 class="h3 mb-4">{{ $message_content }}</h3>

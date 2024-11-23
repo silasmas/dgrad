@@ -166,7 +166,7 @@ class ContreventionController extends Controller
                 'reference' => $inputs["reference"],
                 'amount' => $inputs['amount'],
                 'currency' => $inputs['currency'],
-                'callbackUrl' => env('APP_URL') . 'storeTransaction'
+                'callbackUrl' => env('APP_URL') . 'storeTransaction',
                 // 'callbackUrl' => 'https://dgrad.silasmas.com/storeTransaction'
             );
             $data = json_encode($data);
