@@ -44,7 +44,7 @@
                             <!-- menu logo -->
                             <ul class="menu-logo">
                                 <li>
-                                    <a href=""><img id="logo_img" src="{{ asset('assets/images/logo.png') }}" alt="logo"> </a>
+                                    <a href=""><img id="logo_img" src="" alt=""> </a>
                                 </li>
                             </ul>
                             <!-- menu links -->

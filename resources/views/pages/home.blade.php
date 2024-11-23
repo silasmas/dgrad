@@ -5,13 +5,15 @@
 <!--=================================
 page-title-->
 
-<section class="page-title faq-page-title bg-overlay-black-60 jarallax" data-speed="0.6"
+<section class="page-title faq-page-title bg-overlay-black-60 jarallax pt-5" data-speed="0.6"
     data-img-src="{{ asset('assets/images/bg/02.jpg') }}">
     <div class="container">
         <div class="row">
             <div class="text-center col-lg-12">
-                <h1 class="text-white">SEARCH RESULTS</h1>
-                <span class="text-white">Search any words, questions and so on here.</span>
+                <div class="d-flex justify-content-center">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="" width="200">
+                </div>
+                <span class="text-white">Recherchez une référence</span>
                 <div class="pl-20 pr-20 row justify-content-center form pb-60 xs-mt-20">
                     <div class="col-12 mt-50">
                         <form id="formSearchRef" class="row justify-content-center">
@@ -20,7 +22,7 @@ page-title-->
                                     placeholder="Tapez la référence de l'inffraction" value="">
                             </div>
                             <div class="col-sm-3 xs-mt-10 d-grid">
-                                <button class="button" type="submit"> Trouvez </button>
+                                <button class="button" type="submit" onclick="document.getElementById('FormPaiment').focus()"> Trouvez </button>
                             </div>
                         </form>
                     </div>
@@ -94,7 +96,7 @@ page-title-->
                                 </div>
                             </div>
                             <div class="section-field">
-                                <button type="submit" class="button">
+                                <button type="submit" id="focus" class="button">
                                     <span>Payer</span>
                                     <i class="fa fa-check"></i>
                                 </button>
@@ -165,11 +167,11 @@ page-title-->
 
                     $('#interfacePaiement').removeClass("d-none");                    // $("#formIdentite")[0].reset();
 
-                    scrol();
                     Swal.fire({
                         title: data.msg,
                         icon: 'success'
                     });
+                    scrol();
                 }
             },
             error: function (xhr, status, error) {
@@ -185,10 +187,17 @@ page-title-->
 
     function scrol(){
          // Cible l'élément à atteindre
-         const targetElement = document.getElementById("FormPaiment");
+         const targetElement = document.getElementById("focus");
 
         // Défile jusqu'à cet élément
-        targetElement.scrollIntoView({ behavior: "smooth" });
+        // targetElement.scrollIntoView({ behavior: "smooth" });
+         // Bouton pour afficher le popup
+    const showPopupBtn = document.getElementById("showPopup");
+
+        // Variable pour sauvegarder la position de défilement
+        // Défile jusqu'à la fin de la page
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+
 
     }
     function initRadio(){
