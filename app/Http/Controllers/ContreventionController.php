@@ -342,7 +342,7 @@ class ContreventionController extends Controller
             $ret = json_decode($payment);
 
 
-            return view('transaction_message', [
+            return view('pages.transaction_message', [
                 'status_code' => $code,
                 'message_content' => "Transaction annulée"
             ]);
