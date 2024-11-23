@@ -15,7 +15,7 @@ Route::post('storeTransaction', action: [TransactionController::class, 'store'])
 
 Route::post('sms', action: [TransactionController::class, 'sms'])->name(name: 'sms');
 
-Route::get('/donated/{amount}/{currency}/{code}', [ContreventionController::class, 'paid'])->whereNumber(['amount', 'code'])->name('paid');
+Route::get('/paid/{amount}/{currency}/{code}', [ContreventionController::class, 'paid'])->whereNumber(['amount', 'code'])->name('paid');
 
 Route::get('findByPhone', action: [TransactionController::class, 'findByPhone'])->name(name: 'findByPhone');
 Route::get('findByOrder', action: [TransactionController::class, 'findByOrderNumber'])->name(name: 'findByOrder');
