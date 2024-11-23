@@ -6,6 +6,7 @@ use App\Models\transaction;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoretransactionRequest;
 use App\Http\Requests\UpdatetransactionRequest;
+use App\Models\contreventionUser;
 
 class TransactionController extends Controller
 {
@@ -35,10 +36,15 @@ class TransactionController extends Controller
         $donation_id = is_numeric(explode('-', $request->reference)[4]) ? (int) explode('-', $request->reference)[4] : null;
         // Check if payment already exists
         $payment = transaction::where('order_number', $request->orderNumber)->first();
-
+        
         // If payment exists
         if ($payment != null) {
+            $contre = contreventionUser::where('reference', $request->reference)->first();
 
+            $contre->update([
+                'etat' => $request->code===0?'1':'0',
+                'updated_at' => now()
+            ]);
             $payment->update([
                 'reference' => $request->reference,
                 'provider_reference' => $request->provider_reference,
