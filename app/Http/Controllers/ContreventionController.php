@@ -217,19 +217,19 @@ class ContreventionController extends Controller
                     // $contre->update(['etat' => '1']);
 
                     // // Register payment, even if FlexPay will
-                    // $payment = transaction::where('order_number', $jsonRes->orderNumber)->first();
+                    $payment = transaction::where('order_number', $jsonRes->orderNumber)->first();
 
-                    // if (is_null($payment)) {
-                    //     transaction::create([
-                    //         'reference' => $inputs["reference"],
-                    //         'order_number' => $jsonRes->orderNumber,
-                    //         'amount' => $inputs['amount'],
-                    //         'phone' => $request->other_phone,
-                    //         'currency' => $inputs['currency'],
-                    //         'type_id' => $inputs["transaction_type_id"],
-                    //         'etat' => '1',
-                    //     ]);
-                    // }
+                    if (is_null($payment)) {
+                        transaction::create([
+                            'reference' => $inputs["reference"],
+                            'order_number' => $jsonRes->orderNumber,
+                            'amount' => $inputs['amount'],
+                            'phone' => $request->other_phone,
+                            'currency' => $inputs['currency'],
+                            'type_id' => $inputs["transaction_type_id"],
+                            'etat' => '0',
+                        ]);
+                    }
                     return response()->json(
                         [
                             'reponse' => true,
@@ -300,19 +300,19 @@ class ContreventionController extends Controller
                     // $contre->update(['etat' => '1']);
 
                     // // Register payment, even if FlexPay will
-                    // $payment = transaction::where('order_number', $jsonRes['orderNumber'])->first();
+                    $payment = transaction::where('order_number', $jsonRes['orderNumber'])->first();
 
-                    // if (is_null($payment)) {
-                    //     transaction::create([
-                    //         'reference' => $inputs["reference"],
-                    //         'order_number' => $jsonRes['orderNumber'],
-                    //         'amount' => $inputs['amount'],
-                    //         'phone' => $request->other_phone,
-                    //         'currency' => $inputs['currency'],
-                    //         'type_id' => $inputs["transaction_type_id"],
-                    //         'etat' => '1',
-                    //     ]);
-                    // }
+                    if (is_null($payment)) {
+                        transaction::create([
+                            'reference' => $inputs["reference"],
+                            'order_number' => $jsonRes['orderNumber'],
+                            'amount' => $inputs['amount'],
+                            'phone' => $request->other_phone,
+                            'currency' => $inputs['currency'],
+                            'type_id' => $inputs["transaction_type_id"],
+                            'etat' => '0',
+                        ]);
+                    }
                     return response()->json(
                         [
                             'reponse' => true,

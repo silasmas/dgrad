@@ -9,7 +9,7 @@
     <meta name="author" content="potenzaglobalsolutions.com" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Webster - Responsive Multi-purpose HTML5 Template</title>
+    <title>DGRAD</title>
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="images/favicon.ico" />
