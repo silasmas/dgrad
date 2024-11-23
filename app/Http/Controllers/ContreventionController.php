@@ -309,7 +309,7 @@ class ContreventionController extends Controller
                             'amount' => $inputs['amount'],
                             'phone' => $request->other_phone,
                             'currency' => $inputs['currency'],
-                            'type_id' => $inputs["type"],
+                            'type_id' => $inputs["transaction_type_id"],
                             'etat' => '1',
                         ]);
                     }
