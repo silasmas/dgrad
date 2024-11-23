@@ -142,7 +142,7 @@ class ContreventionController extends Controller
                         'etat' => "1",
                         'updated_at' => now(),
                     ]);
-                    $cli= User::where("matricule",$request->matricule)->first();
+                    $cli= User::where("matricule",$infration->matricule)->first();
                     $infra = contrevention::find($request->contrevention_id);
                 $message = $cli->fisrtname . " " . $cli->name . " votre contrevention de reference " . $infration->reference . " à été soldée !";
                 $ret = $this->sendSms($cli->phone, $message);
