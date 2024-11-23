@@ -246,6 +246,7 @@ page-title-->
                     icon: 'true'
                 });
                 initRadio();
+                document.location(data.data.result_response.url);
             }
         },
         error: function (xhr, status, error) {

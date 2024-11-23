@@ -316,7 +316,8 @@ class ContreventionController extends Controller
                     return response()->json(
                         [
                             'reponse' => true,
-                            'msg' => 'Contrevention payée!'
+                            'msg' => 'Contrevention payée!',
+                            'data' => $object,
                         ]
                     );
                 }
