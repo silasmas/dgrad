@@ -118,6 +118,7 @@ class TransactionController extends Controller
                 [
                     'reponse' => false,
                     'msg' => 'Ce paiement n\'existe pas!',
+                    'data' => $payment,
 
                 ]
             );

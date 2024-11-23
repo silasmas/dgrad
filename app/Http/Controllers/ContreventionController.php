@@ -341,10 +341,10 @@ class ContreventionController extends Controller
             $payment = $tr->findByOrderNumber(request()->get('orderNumber'));
             $ret = json_decode($payment);
 
-
             return view('pages.transaction_message', [
                 'status_code' => $code,
-                'message_content' => "Transaction annulée"
+                'message_content' => "Transaction annulée",
+                'data' => $ret,
             ]);
         }
 
@@ -357,7 +357,8 @@ class ContreventionController extends Controller
 
             return view('transaction_message', [
                 'status_code' => $code,
-                'message_content' => "Transaction echouée"
+                'message_content' => "Transaction echouée",
+                'data' => $ret,
             ]);
         }
     }
