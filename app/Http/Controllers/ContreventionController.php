@@ -305,7 +305,7 @@ class ContreventionController extends Controller
                     if (is_null($payment)) {
                         transaction::create([
                             'reference' => $inputs["reference"],
-                            'order_number' => $jsonRes->orderNumber,
+                            'order_number' => $jsonRes['orderNumber'],
                             'amount' => $inputs['amount'],
                             'phone' => $request->other_phone,
                             'currency' => $inputs['currency'],
