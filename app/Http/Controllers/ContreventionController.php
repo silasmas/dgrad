@@ -300,7 +300,7 @@ class ContreventionController extends Controller
                     $contre->update(['etat' => '1']);
 
                     // Register payment, even if FlexPay will
-                    $payment = transaction::where('order_number', $jsonRes->orderNumber)->first();
+                    $payment = transaction::where('order_number', $jsonRes['orderNumber'])->first();
 
                     if (is_null($payment)) {
                         transaction::create([
