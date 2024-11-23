@@ -260,7 +260,7 @@ class ContreventionController extends Controller
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             
             $curlResponse = curl_exec($curl);
-            dd($curlResponse);
+            
 
             $jsonRes = json_decode($curlResponse, true);
             $code = $jsonRes['code'];
