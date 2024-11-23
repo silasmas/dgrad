@@ -227,7 +227,6 @@ class ContreventionController extends Controller
                             'phone' => $request->other_phone,
                             'currency' => $inputs['currency'],
                             'type_id' => $inputs["transaction_type_id"],
-                            'etat' => '0',
                         ]);
                     }
                     return response()->json(
@@ -310,7 +309,6 @@ class ContreventionController extends Controller
                             'phone' => $request->other_phone,
                             'currency' => $inputs['currency'],
                             'type_id' => $inputs["transaction_type_id"],
-                            'etat' => '0',
                         ]);
                     }
                     return response()->json(
