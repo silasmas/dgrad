@@ -255,11 +255,12 @@ class ContreventionController extends Controller
             ));
 
             $curl = curl_init(env('FLEXPAY_GATEWAY_CARD'));
-
+            
             curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
+            
             $curlResponse = curl_exec($curl);
+            dd($curlResponse);
 
             $jsonRes = json_decode($curlResponse, true);
             $code = $jsonRes['code'];

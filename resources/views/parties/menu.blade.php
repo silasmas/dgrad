@@ -5,7 +5,7 @@
     <div class="topbar">
         <div class="container">
             <div class="row">
-                <div class="col-lg-6 col-md-6 xs-mb-10">
+                {{-- <div class="col-lg-6 col-md-6 xs-mb-10">
                     <div class="text-center topbar-call text-md-start">
                         <ul>
                             <li><i class="fa fa-envelope-o theme-color"></i> gethelp@webster.com</li>
@@ -25,7 +25,7 @@
                             <li><a href="#"><span class="ti-dribbble"></span></a></li>
                         </ul>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
