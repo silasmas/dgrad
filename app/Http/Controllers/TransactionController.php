@@ -32,6 +32,32 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
 
+        $data = file_get_contents('php://input'); 
+	$json = json_decode($request, true); 
+	$reference = $json['reference']; 
+	$code = $json['code'];
+	$order_number = $json['order_number'];
+	$createdAt = $json['createdAt'];
+	$channel = $json['channel'];
+	$amount = $json['amount'];
+	$currency = $json['currency'];
+	$status = $json['status'];
+	$message = $json['message'];
+	
+	$myfile = fopen("callback.txt", "w") or die("Unable to open file!"); // Fichier Callback.txt à créer
+	
+	fwrite($myfile, "Reference : ".$reference."\n");
+	fwrite($myfile, "Code : ".$code."\n");
+	fwrite($myfile, "Order number : ".$order_number."\n");
+	fwrite($myfile, "Date requête : ".$createdAt."\n");
+	fwrite($myfile, "Canal paiement : ".$channel."\n");
+	fwrite($myfile, "Montant payé : ".$amount."\n");
+	fwrite($myfile, "Devise paiement : ".$currency."\n");
+	fwrite($myfile, "Statut transaction : ".$status."\n");
+	fwrite($myfile, "Message : ".$message."\n");
+
+	fclose($myfile);
+
         $user_id = is_numeric(explode('-', $request->reference)[2]) ? (int) explode('-', $request->reference)[2] : null;
         $cart_id = is_numeric(explode('-', $request->reference)[3]) ? (int) explode('-', $request->reference)[3] : null;
         $donation_id = is_numeric(explode('-', $request->reference)[4]) ? (int) explode('-', $request->reference)[4] : null;
