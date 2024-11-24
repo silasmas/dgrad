@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use App\Models\contrevention;
 use App\Models\contreventionUser;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\StorecontreventionRequest;
 use App\Http\Requests\UpdatecontreventionRequest;
 use App\Http\Resources\contreventionUser as RescontreventionUser;
 use App\Models\transaction;
@@ -90,7 +89,9 @@ class ContreventionController extends Controller
                 );
             } else {
                 $infra = contrevention::find($request->contrevention_id);
-                $message = $cli->fisrtname . " " . $cli->name . " votre contrevention de la voiture imatriculée " . $cli->matricule . " avec reference " . $ref . " est de " . $infra->prix . $infra->monaie . " à payer dans 24h";
+                $message = $cli->fisrtname . " " . $cli->name . " votre contrevention de la voiture imatriculée "
+                 . $cli->matricule . " avec reference "
+                 . $ref . " est de " . $infra->prix . $infra->monaie . " à payer dans 24h. cliquez sur pour payer ".env("APP_URL").$ref;
                 $ret = $this->sendSms($cli->phone, $message);
 
                 return response()->json(
@@ -319,7 +320,7 @@ class ContreventionController extends Controller
                     return response()->json(
                         [
                             'reponse' => true,
-                            'msg' => 'Contrevention payée!',
+                            'msg' => 'Vous serez rediriger pour payé dans quelques instant!',
                             'data' => $object,
                         ]
                     );

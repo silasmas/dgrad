@@ -5,13 +5,13 @@
 <!--=================================
 page-title-->
 
-<section class="page-title faq-page-title bg-overlay-black-60 jarallax pt-5" data-speed="0.6"
-    data-img-src="{{ asset('assets/images/bg/02.jpg') }}">
-    <div class="container">
+<section   class="page-title faq-page-title bg-overlay-black-60 jarallax pt-5" data-speed="0.6"
+    data-img-src="{{ asset('assets/images/bg/dgradbg.jpg') }}">
+    <div class="container" style="margin-top: 300px">
         <div class="row">
             <div class="text-center col-lg-12">
-                <div class="d-flex justify-content-center">
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="" width="200">
+                <div class="d-flex justify-content-center" >
+                    <img src="{{ asset('assets/images/logo.png') }}" class="d-none" alt="" width="200">
                 </div>
                 <span class="text-white">Recherchez une référence</span>
                 <div class="pl-20 pr-20 row justify-content-center form pb-60 xs-mt-20">
@@ -22,7 +22,7 @@ page-title-->
                                     placeholder="Tapez la référence de l'inffraction" value="">
                             </div>
                             <div class="col-sm-3 xs-mt-10 d-grid">
-                                <button class="button" type="submit" onclick="document.getElementById('FormPaiment').focus()"> Trouvez </button>
+                                <button class="button" type="submit"> Trouvez </button>
                             </div>
                         </form>
                     </div>
@@ -243,7 +243,7 @@ page-title-->
                 $('#interfacePaiement').addClass("d-none");
                 Swal.fire({
                     title: data.msg,
-                    icon: 'true'
+                    icon: 'warning'
                 });
                 initRadio();
                 document.location=data.data.result_response.url;

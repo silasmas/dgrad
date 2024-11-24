@@ -9,18 +9,18 @@
             <div class="col-lg-4 col-md-6 login-fancy-bg bg-overlay-black-30"
                 style="background: url(images/login/02.jpg);">
                 <div class="login-fancy pos-r">
-                    <h2 class="mb-20 text-white">Hello world!</h2>
-                    <p class="mb-20 text-white">Create tailor-cut websites with the exclusive multi-purpose responsive
-                        template along with powerful features.</p>
+                    <h2 class="mb-20 text-white">DGRAD</h2>
+                    <p class="mb-20 text-white">
+                        Bienvenue sur l'interface dédiée à la génération de contraventions, réservée exclusivement aux agents habilités.                    </p>
                     <ul class="list-unstyled list-inline-item pos-bot pb-30">
-                        <li class="list-inline-item"><a class="text-white" href="#"> Terms of Use</a> </li>
-                        <li class="list-inline-item"><a class="text-white" href="#"> Privacy Policy</a></li>
+                        <li class="list-inline-item"><a class="text-white" href="#"> Conditions d'utilisation</a> </li>
+                        <li class="list-inline-item"><a class="text-white" href="#"> politique de confidentialité</a></li>
                     </ul>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 white-bg">
                 <div class="clearfix pb-40 login-fancy">
-                    <h4 id="txtInfo">Silas Masimango</h4>
+                    <h4 id="txtInfo">Authentifiez-vous</h4>
                     <div>
                         <form id="formIdentite">
                             <div class="mb-20 section-field">
@@ -45,7 +45,7 @@
                     </div>
                     <div id="infoInfraction" class="d-none">
                         <form id="formMatricule">
-                            <div class="mb-20 section-field">
+                            <div class="mb-20 section-field d-none">
                                 <label class="mb-10" for="Password">Client</label>
                                 <input id="user_id" class="form-control" type="texte" placeholder="ID"
                                     name="user_id">
@@ -58,7 +58,7 @@
                             <div class="mb-20 section-field">
                                 <label class="mb-10" for="">Choisir une infraction* </label>
                                 <div class="mb-4 box">
-                                    <select class="wide fancyselect" name="contrevention_id">
+                                    <select class="wide fancyselect mb-5" name="contrevention_id">
                                         @forelse ($infractions as $inf)
                                         <option value="{{ $inf->id }}">{{$inf->name}}</option>
                                         @empty
