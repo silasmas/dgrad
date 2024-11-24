@@ -145,7 +145,7 @@ page-title-->
 
         var ref= $('#reference').val();
         $.ajax({
-            url: 'findInfra',
+            url: '../findInfra',
             type: "GET",
             data: {'ref':ref},
             success: function (data) {
@@ -262,16 +262,23 @@ page-title-->
     });
 $(document).ready(function () {
     // Récupère les paramètres de l'URL
-    const urlParams = new URLSearchParams(window.location.search);
+    // const urlParams = new URLSearchParams(window.location.search);
+ // Récupérer l'URL complète
+ const fullUrl = window.location.href;
 
+// Extraire le dernier segment après le dernier "/"
+const lastSegment = fullUrl.split('/').pop();
+
+// Afficher dans la console pour vérifier
+console.log('Dernier paramètre :', lastSegment);
     // Vérifie si le paramètre "ref" existe
-    if (urlParams.has('ref')) {
-    const ref = urlParams.get('ref'); // Obtenir la valeur du paramètre "ref"
+    if (lastSegment.includes('REF')) {
+    // const ref = urlParams.get('ref'); // Obtenir la valeur du paramètre "ref"
 
     // Vérifier si le paramètre existe
     if (ref) {
         // Remplir le champ de recherche avec la valeur de 'ref'
-        $('#reference').val(ref);
+        $('#reference').val(lastSegment);
 
         // Simuler un clic sur le bouton de recherche
         $('#btnSearchRef').trigger('click');

@@ -5,6 +5,7 @@ use App\Http\Controllers\ContreventionController;
 use App\Http\Controllers\TransactionController;
 
 Route::get('/', action: [ContreventionController::class, 'index'])->name('home');
+Route::get('ref/{ref}', action: [ContreventionController::class, 'index'])->name(name: 'ref');
 Route::get('/infraction', action: [ContreventionController::class, 'infraction'])->name(name: 'infraction');
 
 Route::post('searchMatricule', action: [ContreventionController::class, 'searchMatricule'])->name('searchMatricule');

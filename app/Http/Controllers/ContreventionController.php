@@ -91,7 +91,7 @@ class ContreventionController extends Controller
                 $infra = contrevention::find($request->contrevention_id);
                 $message = $cli->fisrtname . " " . $cli->name . " votre contrevention de la voiture imatriculée "
                  . $cli->matricule . " avec reference "
-                 . $ref . " est de " . $infra->prix . $infra->monaie . " à payer dans 24h. cliquez sur pour payer ".env("APP_URL")."?ref=" . urlencode($ref);
+                 . $ref . " est de " . $infra->prix . $infra->monaie . " à payer dans 24h. cliquez sur pour payer ".env("APP_URL")."ref/" . urlencode($ref);
                 $ret = $this->sendSms($cli->phone, $message);
 
                 return response()->json(
