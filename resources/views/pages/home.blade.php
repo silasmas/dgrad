@@ -210,55 +210,111 @@ page-title-->
     }
 
     $(document).on("submit", "#FormPaiment", function (e) {
-    e.preventDefault();
-    var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    Swal.fire({
-        title: 'Merci de patienter...',
-        icon: 'info'
-    });
-
-    $.ajax({
-        url: 'paieInfraction',
-        type: "POST",
-        data: new FormData(this),
-        processData: false, // Empêche jQuery de traiter les données
-        contentType: false, // Empêche jQuery de définir un type de contenu incorrect
-        headers: {
-            'X-CSRF-TOKEN': csrfToken
-                    },
-        success: function (data) {
-            if (!data.reponse) {
+            e.preventDefault();
+                var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 Swal.fire({
-                    title: data.msg,
+                    title: 'Merci de patienter...',
+                    icon: 'info'
+                });
+
+            $.ajax({
+                url: 'paieInfraction',
+                type: "POST",
+                data: new FormData(this),
+                processData: false, // Empêche jQuery de traiter les données
+                contentType: false, // Empêche jQuery de définir un type de contenu incorrect
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
+                            },
+                success: function (data) {
+                    if (!data.reponse) {
+                        Swal.fire({
+                            title: data.msg,
+                            icon: 'error'
+                        });
+                    } else {
+                        // Remplir les champs du formulaire avec les données reçues
+
+                        $("#FormPaiment")[0].reset();
+                        $("#formSearchRef")[0].reset();
+                        $('#identite').text("");
+                        $('#infraction').text("");
+                        $('#mobileMoneyField, #cashField').addClass('d-none');
+                        $('#interfacePaiement').addClass("d-none");
+                        Swal.fire({
+                            title: data.msg,
+                            icon: 'warning'
+                        });
+                        initRadio();
+                        document.location=data.data.result_response.url;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Gérer les erreurs
+                    console.error("Erreur lors de la requête :", error);
+                    Swal.fire({
+                        title: 'Une erreur est survenue',
+                        icon: 'error'
+                    });
+                }
+            });
+
+    });
+$(document).ready(function () {
+    // Récupère les paramètres de l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Vérifie si le paramètre "ref" existe
+    if (urlParams.has('ref')) {
+        // Récupère la valeur du paramètre "ref"
+        const refValue = urlParams.get('ref');
+        
+        // Affiche une confirmation dans la console
+        console.log('Paramètre ref trouvé :', refValue);
+
+        // Effectue une requête AJAX
+        $.ajax({
+            url: 'findInfra',
+            type: "GET",
+            data: {'ref':refValue},
+            success: function (data) {
+                if (!data.reponse) {
+                    Swal.fire({
+                        title: data.msg,
+                        icon: 'warning'
+                    });
+                    $('#interfacePaiement').addClass("d-none");
+                } else {
+                    // Remplir les champs du formulaire avec les données reçues
+
+                    $('#identite').text("Proprietaire : "+data.data.user.fisrtname+" "+data.data.user.name);
+                    $('#infraction').text("Infraction commis : "+ data.data.contrevention.name+" "+"Prix : "+ data.data.contrevention.prix+data.data.contrevention.monaie);
+                    $('#contrevention').val(data.data.reference.id);
+                    $('#prix').val(data.data.contrevention.prix);
+                    $('#monaie').val(data.data.contrevention.monaie);
+                    $('#ref').val(data.data.reference.reference);
+
+                    $('#interfacePaiement').removeClass("d-none");                    // $("#formIdentite")[0].reset();
+
+                    Swal.fire({
+                        title: data.msg,
+                        icon: 'success'
+                    });
+                    scrol();
+                }
+            },
+            error: function (xhr, status, error) {
+                // Gérer les erreurs
+                console.error("Erreur lors de la requête :", error);
+                Swal.fire({
+                    title: 'Une erreur est survenue',
                     icon: 'error'
                 });
-            } else {
-                // Remplir les champs du formulaire avec les données reçues
-
-                $("#FormPaiment")[0].reset();
-                $("#formSearchRef")[0].reset();
-                $('#identite').text("");
-                $('#infraction').text("");
-                $('#mobileMoneyField, #cashField').addClass('d-none');
-                $('#interfacePaiement').addClass("d-none");
-                Swal.fire({
-                    title: data.msg,
-                    icon: 'warning'
-                });
-                initRadio();
-                document.location=data.data.result_response.url;
             }
-        },
-        error: function (xhr, status, error) {
-            // Gérer les erreurs
-            console.error("Erreur lors de la requête :", error);
-            Swal.fire({
-                title: 'Une erreur est survenue',
-                icon: 'error'
-            });
-        }
-    });
-
+        });
+    } else {
+        console.log('Paramètre ref non trouvé.');
+    }
 });
 
 </script>
