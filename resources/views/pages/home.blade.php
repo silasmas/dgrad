@@ -22,7 +22,7 @@ page-title-->
                                     placeholder="Tapez la référence de l'inffraction" value="">
                             </div>
                             <div class="col-sm-3 xs-mt-10 d-grid">
-                                <button class="button" type="submit"> Trouvez </button>
+                                <button id="btnSearchRef" class="button" type="submit"> Trouvez </button>
                             </div>
                         </form>
                     </div>
@@ -266,52 +266,16 @@ $(document).ready(function () {
 
     // Vérifie si le paramètre "ref" existe
     if (urlParams.has('ref')) {
-        // Récupère la valeur du paramètre "ref"
-        const refValue = urlParams.get('ref');
-        
-        // Affiche une confirmation dans la console
-        console.log('Paramètre ref trouvé :', refValue);
+    const ref = urlParams.get('ref'); // Obtenir la valeur du paramètre "ref"
 
-        // Effectue une requête AJAX
-        $.ajax({
-            url: 'findInfra',
-            type: "GET",
-            data: {'ref':refValue},
-            success: function (data) {
-                if (!data.reponse) {
-                    Swal.fire({
-                        title: data.msg,
-                        icon: 'warning'
-                    });
-                    $('#interfacePaiement').addClass("d-none");
-                } else {
-                    // Remplir les champs du formulaire avec les données reçues
+    // Vérifier si le paramètre existe
+    if (ref) {
+        // Remplir le champ de recherche avec la valeur de 'ref'
+        $('#reference').val(ref);
 
-                    $('#identite').text("Proprietaire : "+data.data.user.fisrtname+" "+data.data.user.name);
-                    $('#infraction').text("Infraction commis : "+ data.data.contrevention.name+" "+"Prix : "+ data.data.contrevention.prix+data.data.contrevention.monaie);
-                    $('#contrevention').val(data.data.reference.id);
-                    $('#prix').val(data.data.contrevention.prix);
-                    $('#monaie').val(data.data.contrevention.monaie);
-                    $('#ref').val(data.data.reference.reference);
-
-                    $('#interfacePaiement').removeClass("d-none");                    // $("#formIdentite")[0].reset();
-
-                    Swal.fire({
-                        title: data.msg,
-                        icon: 'success'
-                    });
-                    scrol();
-                }
-            },
-            error: function (xhr, status, error) {
-                // Gérer les erreurs
-                console.error("Erreur lors de la requête :", error);
-                Swal.fire({
-                    title: 'Une erreur est survenue',
-                    icon: 'error'
-                });
-            }
-        });
+        // Simuler un clic sur le bouton de recherche
+        $('#btnSearchRef').trigger('click');
+    }
     } else {
         console.log('Paramètre ref non trouvé.');
     }
