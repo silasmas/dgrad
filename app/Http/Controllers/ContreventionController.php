@@ -65,9 +65,9 @@ class ContreventionController extends Controller
     public function store(Request $request)
     {
 
-       $cli= User::where("matricule",$request->matricule)->first();
+        $cli = User::where("matricule", $request->matricule)->first();
 
-        if($cli){
+        if ($cli) {
             $ref = 'REF-' . ((string) random_int(10000000, 99999999));
             $inputs = [
                 "contrevention_id" => $request->contrevention_id,
@@ -90,8 +90,8 @@ class ContreventionController extends Controller
             } else {
                 $infra = contrevention::find($request->contrevention_id);
                 $message = $cli->fisrtname . " " . $cli->name . " votre contrevention de la voiture imatriculée "
-                 . $cli->matricule . " avec reference "
-                 . $ref . " est de " . $infra->prix . $infra->monaie . " à payer dans 24h. cliquez sur pour payer ".env("APP_URL")."ref/" . urlencode($ref);
+                    . $cli->matricule . " avec reference "
+                    . $ref . " est de " . $infra->prix . $infra->monaie . " à payer dans 24h. cliquez sur pour payer " . env("APP_URL") . "ref/" . urlencode($ref);
                 $ret = $this->sendSms($cli->phone, $message);
 
                 return response()->json(
@@ -101,8 +101,7 @@ class ContreventionController extends Controller
                     ]
                 );
             }
-
-        }else{
+        } else {
             return response()->json(
                 [
                     'reponse' => false,
@@ -110,7 +109,6 @@ class ContreventionController extends Controller
                 ]
             );
         }
-
     }
     public function paieInfraction(Request $request)
     {
@@ -143,10 +141,10 @@ class ContreventionController extends Controller
                         'etat' => "1",
                         'updated_at' => now(),
                     ]);
-                    $cli= User::where("matricule",$infration->matricule)->first();
+                    $cli = User::where("matricule", $infration->matricule)->first();
                     $infra = contrevention::find($request->contrevention_id);
-                $message = $cli->fisrtname . " " . $cli->name . " votre contrevention de reference " . $infration->reference . " à été soldée !";
-                $ret = $this->sendSms($cli->phone, $message);
+                    $message = $cli->fisrtname . " " . $cli->name . " votre contrevention de reference " . $infration->reference . " à été soldée !";
+                    $ret = $this->sendSms($cli->phone, $message);
 
                     return response()->json(
                         [
@@ -226,14 +224,16 @@ class ContreventionController extends Controller
                     $payment = transaction::where('order_number', $jsonRes->orderNumber)->first();
 
                     if (is_null($payment)) {
-                        transaction::create([
-                            'reference' => $inputs["reference"],
-                            'order_number' => $jsonRes->orderNumber,
-                            'amount' => $inputs['amount'],
-                            'phone' => $request->other_phone,
-                            'currency' => $inputs['currency'],
-                            'type_id' => $inputs["transaction_type_id"],
-                        ]);
+                        transaction::updateOrCreate(
+                            ['reference' => $inputs["reference"]],
+                            [
+                                'order_number' => $jsonRes->orderNumber,
+                                'amount' => $inputs['amount'],
+                                'phone' => $request->other_phone,
+                                'currency' => $inputs['currency'],
+                                'type_id' => $inputs["transaction_type_id"],
+                            ]
+                        );
                     }
                     return response()->json(
                         [
@@ -260,12 +260,12 @@ class ContreventionController extends Controller
             ));
 
             $curl = curl_init(env('FLEXPAY_GATEWAY_CARD'));
-            
+
             curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            
+
             $curlResponse = curl_exec($curl);
-            
+
 
             $jsonRes = json_decode($curlResponse, true);
             $code = $jsonRes['code'];
@@ -285,7 +285,7 @@ class ContreventionController extends Controller
                         [
                             'reponse' => false,
                             'msg' => $jsonRes['message'],
-                        'data' => $code
+                            'data' => $code
                         ]
                     );
                 } else {
@@ -308,14 +308,16 @@ class ContreventionController extends Controller
                     $payment = transaction::where('order_number', $jsonRes['orderNumber'])->first();
 
                     if (is_null($payment)) {
-                        transaction::create([
-                            'reference' => $inputs["reference"],
-                            'order_number' => $jsonRes['orderNumber'],
-                            'amount' => $inputs['amount'],
-                            'phone' => $request->other_phone,
-                            'currency' => $inputs['currency'],
-                            'type_id' => $inputs["transaction_type_id"],
-                        ]);
+                        transaction::updateOrCreate(
+                            ['reference' => $inputs["reference"]],
+                            [
+                                'order_number' => $jsonRes['orderNumber'],
+                                'amount' => $inputs['amount'],
+                                'phone' => $request->other_phone,
+                                'currency' => $inputs['currency'],
+                                'type_id' => $inputs["transaction_type_id"],
+                            ]
+                        );
                     }
                     return response()->json(
                         [

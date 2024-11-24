@@ -126,7 +126,7 @@
             } else {
                 // Remplir les champs du formulaire avec les données reçues
                 console.log(data.data);
-                $('#txtInfo').text(data.data.firstname + ' - ' + data.data.name);
+                $('#txtInfo').text(data.data.fisrtname + ' - ' + data.data.name);
                 $('#user_id').val(data.data.id);
                 $('#formIdentite').addClass("d-none");
                 $('#infoInfraction').removeClass("d-none");

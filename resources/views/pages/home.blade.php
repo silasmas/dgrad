@@ -5,12 +5,12 @@
 <!--=================================
 page-title-->
 
-<section   class="page-title faq-page-title bg-overlay-black-60 jarallax pt-5" data-speed="0.6"
+<section class="page-title faq-page-title bg-overlay-black-60 jarallax pt-5" data-speed="0.6"
     data-img-src="{{ asset('assets/images/bg/dgradbg.jpg') }}">
     <div class="container" style="margin-top: 300px">
         <div class="row">
             <div class="text-center col-lg-12">
-                <div class="d-flex justify-content-center" >
+                <div class="d-flex justify-content-center">
                     <img src="{{ asset('assets/images/logo.png') }}" class="d-none" alt="" width="200">
                 </div>
                 <span class="text-white">Recherchez une référence</span>
@@ -80,8 +80,8 @@ page-title-->
                             </div>
                             <div class="mb-20 section-field d-none" id="mobileMoneyField">
                                 <label class="mb-10" for="Password">Numéro de téléphone :</label>
-                                <input id="toggleField" class="web form-control" type="text" placeholder="Ex :24382700000"
-                                    name="number">
+                                <input id="toggleField" class="web form-control" type="text"
+                                    placeholder="Ex :24382700000" name="number">
                             </div>
                             <div id="cashField" class="d-none">
                                 <div class="mb-20 section-field ">
@@ -218,7 +218,7 @@ page-title-->
                 });
 
             $.ajax({
-                url: 'paieInfraction',
+                url: '../paieInfraction',
                 type: "POST",
                 data: new FormData(this),
                 processData: false, // Empêche jQuery de traiter les données
@@ -267,10 +267,13 @@ $(document).ready(function () {
  const fullUrl = window.location.href;
 
 // Extraire le dernier segment après le dernier "/"
-const lastSegment = fullUrl.split('/').pop();
-
-// Afficher dans la console pour vérifier
-console.log('Dernier paramètre :', lastSegment);
+        const lastSegment = fullUrl.split('/').pop();
+        console.log(lastSegment);
+        if(lastSegment==''){
+            console.log("at HOME");
+        }else{
+        // Afficher dans la console pour vérifier
+        console.log('Dernier paramètre :', lastSegment);
     // Vérifie si le paramètre "ref" existe
     if (lastSegment.includes('REF')) {
     // const ref = urlParams.get('ref'); // Obtenir la valeur du paramètre "ref"
@@ -285,6 +288,11 @@ console.log('Dernier paramètre :', lastSegment);
     }
     } else {
         console.log('Paramètre ref non trouvé.');
+        Swal.fire({
+                    title: 'Erreur de paramètre.',
+                    icon: 'error'
+                });
+    }
     }
 });
 
