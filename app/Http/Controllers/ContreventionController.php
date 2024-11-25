@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use stdClass;
 use App\Models\User;
 use Nette\Utils\Random;
+use App\Models\transaction;
 use Illuminate\Http\Request;
 use App\Models\contrevention;
 use App\Models\contreventionUser;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UpdatecontreventionRequest;
 use App\Http\Resources\contreventionUser as RescontreventionUser;
-use App\Models\transaction;
 
 class ContreventionController extends Controller
 {
@@ -162,12 +163,12 @@ class ContreventionController extends Controller
                 }
             }
         } elseif ($request->toggleOption === "mobile") {
-            $data = [
+            $datas = [
                 'timestamp' => now(),
                 'reference' => $request->input('reference'),
             ];
+            Log::info('info avant : ', $datas);
 
-            \Log::info('Callback reçu avec détails : ', $data);
             // Create response by sending request to FlexPay
             $data = array(
                 'merchant' => env("FLEXPAY_MARCHAND"),
@@ -179,6 +180,7 @@ class ContreventionController extends Controller
                 'callbackUrl' => env('APP_URL') . 'storeTransaction',
                 // 'callbackUrl' => 'https://dgrad.silasmas.com/storeTransaction'
             );
+            Log::info('info avec détails info: ', $data);
             $data = json_encode($data);
             $ch = curl_init();
 
@@ -207,7 +209,6 @@ class ContreventionController extends Controller
 
                 $jsonRes = json_decode($response);
                 $code = $jsonRes->code; // Push sending status
-
                 if ($code != '0') {
                     return response()->json(
                         [
@@ -222,6 +223,7 @@ class ContreventionController extends Controller
                         'message' => $jsonRes->message,
                         'order_number' => $jsonRes->orderNumber
                     ];
+                    Log::info('retour info détails : ',   $object->result_response);
                     // $contre = contreventionUser::where('reference', $inputs["reference"])->first();
                     // // The donation is registered only if the processing succeed
                     // $contre->update(['etat' => '1']);
