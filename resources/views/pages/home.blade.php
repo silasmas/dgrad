@@ -116,12 +116,9 @@ page-title-->
 <script>
     $(document).ready(function() {
         initRadio();
-        // Afficher la section correspondant au bouton radio sélectionné par défaut
-        // $('input[name="toggleOption"]:checked').trigger('change');
+        // Afficher la section correspondant au bouton radio sélectionné par défaut;
         $('input[name="toggleOption"]').on('change', function() {
-
                 const selectedValue = $(this).val();
-
                 // Cacher tous les champs
                 $('#mobileMoneyField, #cashField').addClass('d-none');
 
@@ -138,61 +135,58 @@ page-title-->
 
     $(document).on("submit", "#formSearchRef", function (e) {
         e.preventDefault();
-        Swal.fire({
-            title: 'Merci de patienter...',
-            icon: 'info'
-        });
+            Swal.fire({
+                title: 'Merci de patienter...',
+                icon: 'info'
+            });
 
-        var ref= $('#reference').val();
-        $.ajax({
-            url: '../findInfra',
-            type: "GET",
-            data: {'ref':ref},
-            success: function (data) {
-                if (!data.reponse) {
+            var ref= $('#reference').val();
+            $.ajax({
+                url: '../findInfra',
+                type: "GET",
+                data: {'ref':ref},
+                success: function (data) {
+                    if (!data.reponse) {
+                        Swal.fire({
+                            title: data.msg,
+                            icon: 'warning'
+                        });
+                        $('#interfacePaiement').addClass("d-none");
+                    } else {
+                        // Remplir les champs du formulaire avec les données reçues
+
+                        $('#identite').text("Proprietaire : "+data.data.user.fisrtname+" "+data.data.user.name);
+                        $('#infraction').text("Infraction commis : "+ data.data.contrevention.name+" "+"Prix : "+ data.data.contrevention.prix+data.data.contrevention.monaie);
+                        $('#contrevention').val(data.data.reference.id);
+                        $('#prix').val(data.data.contrevention.prix);
+                        $('#monaie').val(data.data.contrevention.monaie);
+                        $('#ref').val(data.data.reference.reference);
+
+                        $('#interfacePaiement').removeClass("d-none");                    // $("#formIdentite")[0].reset();
+
+                        Swal.fire({
+                            title: data.msg,
+                            icon: 'success'
+                        });
+                        scrol();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Gérer les erreurs
+                    console.error("Erreur lors de la requête :", error);
                     Swal.fire({
-                        title: data.msg,
-                        icon: 'warning'
+                        title: 'Une erreur est survenue',
+                        icon: 'error'
                     });
-                    $('#interfacePaiement').addClass("d-none");
-                } else {
-                    // Remplir les champs du formulaire avec les données reçues
-
-                    $('#identite').text("Proprietaire : "+data.data.user.fisrtname+" "+data.data.user.name);
-                    $('#infraction').text("Infraction commis : "+ data.data.contrevention.name+" "+"Prix : "+ data.data.contrevention.prix+data.data.contrevention.monaie);
-                    $('#contrevention').val(data.data.reference.id);
-                    $('#prix').val(data.data.contrevention.prix);
-                    $('#monaie').val(data.data.contrevention.monaie);
-                    $('#ref').val(data.data.reference.reference);
-
-                    $('#interfacePaiement').removeClass("d-none");                    // $("#formIdentite")[0].reset();
-
-                    Swal.fire({
-                        title: data.msg,
-                        icon: 'success'
-                    });
-                    scrol();
                 }
-            },
-            error: function (xhr, status, error) {
-                // Gérer les erreurs
-                console.error("Erreur lors de la requête :", error);
-                Swal.fire({
-                    title: 'Une erreur est survenue',
-                    icon: 'error'
-                });
-            }
-        });
+            });
     });
 
     function scrol(){
          // Cible l'élément à atteindre
          const targetElement = document.getElementById("focus");
-
-        // Défile jusqu'à cet élément
-        // targetElement.scrollIntoView({ behavior: "smooth" });
          // Bouton pour afficher le popup
-    const showPopupBtn = document.getElementById("showPopup");
+        const showPopupBtn = document.getElementById("showPopup");
 
         // Variable pour sauvegarder la position de défilement
         // Défile jusqu'à la fin de la page
@@ -233,20 +227,17 @@ page-title-->
                             icon: 'error'
                         });
                     } else {
+                        console.log(data);
                         // Remplir les champs du formulaire avec les données reçues
-
-                        $("#FormPaiment")[0].reset();
-                        $("#formSearchRef")[0].reset();
-                        $('#identite').text("");
-                        $('#infraction').text("");
-                        $('#mobileMoneyField, #cashField').addClass('d-none');
-                        $('#interfacePaiement').addClass("d-none");
                         Swal.fire({
                             title: data.msg,
                             icon: 'warning'
                         });
-                        initRadio();
-                        document.location=data.data.result_response.url;
+                       if( data.type=="mobile"){
+                           check(data.reference);
+                        }else{
+                            document.location=data.data.result_response.url;
+                        }
                     }
                 },
                 error: function (xhr, status, error) {
@@ -260,41 +251,97 @@ page-title-->
             });
 
     });
-$(document).ready(function () {
-    // Récupère les paramètres de l'URL
-    // const urlParams = new URLSearchParams(window.location.search);
- // Récupérer l'URL complète
- const fullUrl = window.location.href;
+    $(document).ready(function () {
+        // Récupère les paramètres de l'URL
+                    // const urlParams = new URLSearchParams(window.location.search);
+                // Récupérer l'URL complète
+                const fullUrl = window.location.href;
+                // Extraire le dernier segment après le dernier "/"
+                        const lastSegment = fullUrl.split('/').pop();
+                        console.log(lastSegment);
+                        if(lastSegment==''){
+                            console.log("at HOME");
+                        }else{
+                                    // Afficher dans la console pour vérifier
+                                    console.log('Dernier paramètre :', lastSegment);
+                                // Vérifie si le paramètre "ref" existe
+                                if (lastSegment.includes('REF')) {
+                                    // const ref = urlParams.get('ref'); // Obtenir la valeur du paramètre "ref"
 
-// Extraire le dernier segment après le dernier "/"
-        const lastSegment = fullUrl.split('/').pop();
-        console.log(lastSegment);
-        if(lastSegment==''){
-            console.log("at HOME");
-        }else{
-        // Afficher dans la console pour vérifier
-        console.log('Dernier paramètre :', lastSegment);
-    // Vérifie si le paramètre "ref" existe
-    if (lastSegment.includes('REF')) {
-    // const ref = urlParams.get('ref'); // Obtenir la valeur du paramètre "ref"
+                                    // Vérifier si le paramètre existe
+                                    if (ref) {
+                                        // Remplir le champ de recherche avec la valeur de 'ref'
+                                        $('#reference').val(lastSegment);
 
-    // Vérifier si le paramètre existe
-    if (ref) {
-        // Remplir le champ de recherche avec la valeur de 'ref'
-        $('#reference').val(lastSegment);
+                                        // Simuler un clic sur le bouton de recherche
+                                        $('#btnSearchRef').trigger('click');
+                                    }
+                                } else {
+                                        console.log('Paramètre ref non trouvé.');
+                                        Swal.fire({
+                                                    title: 'Erreur de paramètre.',
+                                                    icon: 'error'
+                                                });
+                                    }
+                        }
+    });
+    function check(reference){
+        // Démarrer un intervalle pour vérifier l'état de la transaction
+        const transactionReference = reference; // Remplacez par la vraie référence
+        let attempts = 0; // Compteur de tentatives
+        const maxAttempts = 10; // Limite du nombre de tentatives
+        const interval = setInterval(() => {
+            attempts++;
+            $.ajax({
+                url: '/checkTransactionStatus', // Route qui vérifie le statut
+                method: 'GET',
+                data: { reference: transactionReference },
+                success: function (response) {
+                    if (response.reponse && response.status === 'completed') {
+                        // Arrêter l'intervalle
+                        clearInterval(interval);
 
-        // Simuler un clic sur le bouton de recherche
-        $('#btnSearchRef').trigger('click');
+                        // Afficher un message ou rediriger
+                        Swal.fire({
+                            title: 'Paiement réussi !',
+                            icon: 'success'
+                        });
+                        $("#FormPaiment")[0].reset();
+                                $("#formSearchRef")[0].reset();
+                                $('#identite').text("");
+                                $('#infraction').text("");
+                                $('#mobileMoneyField, #cashField').addClass('d-none');
+                                $('#interfacePaiement').addClass("d-none");
+                                initRadio();
+                        // Rechargez la page ou mettez à jour l'interface
+                        location.reload();
+                    }else if (attempts >= maxAttempts) {
+                    // Arrêter les vérifications après le nombre maximum de tentatives
+                    clearInterval(interval);
+
+                    Swal.fire({
+                        title: 'Vérification interrompue',
+                        text: "Le statut de la transaction n'a pas pu être confirmé. Veuillez réessayer plus tard.",
+                        icon: 'error'
+                    });
+                }
+                },
+                error: function () {
+                    console.error('Erreur lors de la vérification du statut.');
+                    if (attempts >= maxAttempts) {
+                    // Arrêter les vérifications en cas d'erreurs répétées
+                    clearInterval(interval);
+
+                    Swal.fire({
+                        title: 'Erreur',
+                        text: "Impossible de vérifier le statut de la transaction. Veuillez réessayer.",
+                        icon: 'error'
+                    });
+                }
+                }
+            });
+        }, 5000); // Vérifier toutes les 5 secondes
+
     }
-    } else {
-        console.log('Paramètre ref non trouvé.');
-        Swal.fire({
-                    title: 'Erreur de paramètre.',
-                    icon: 'error'
-                });
-    }
-    }
-});
-
 </script>
 @endsection

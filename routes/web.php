@@ -15,6 +15,8 @@ Route::post('registerInfra', action: [ContreventionController::class, 'store'])-
 Route::post('storeTransaction', action: [TransactionController::class, 'store'])->name(name: 'storeTransaction');
 
 Route::post('sms', action: [TransactionController::class, 'sms'])->name(name: 'sms');
+Route::get('/checkTransactionStatus', [TransactionController::class, 'checkTransactionStatus'])->name('checkTransactionStatus');
+
 
 Route::get('/paid/{amount}/{currency}/{code}', [ContreventionController::class, 'paid'])->whereNumber(['amount', 'code'])->name('paid');
 

@@ -170,8 +170,8 @@ class ContreventionController extends Controller
                 'reference' => $inputs["reference"],
                 'amount' => $inputs['amount'],
                 'currency' => $inputs['currency'],
-                // 'callbackUrl' => env('APP_URL') . 'storeTransaction',
-                'callbackUrl' => 'https://dgrad.silasmas.com/storeTransaction'
+                'callbackUrl' => env('APP_URL') . 'storeTransaction',
+                // 'callbackUrl' => 'https://dgrad.silasmas.com/storeTransaction'
             );
             $data = json_encode($data);
             $ch = curl_init();
@@ -239,6 +239,8 @@ class ContreventionController extends Controller
                         [
                             'reponse' => true,
                             'msg' => 'Veuillez validé votre paiement sur votre téléphone!',
+                            'type' => "mobile",
+                            'reference' => $inputs["reference"],
                             'orderNumber' => $jsonRes->orderNumber
                         ]
                     );
@@ -323,7 +325,9 @@ class ContreventionController extends Controller
                         [
                             'reponse' => true,
                             'msg' => 'Vous serez rediriger pour payé dans quelques instant!',
-                            'data' => $object,
+                            'type' => "mobile",
+                            'reference' => $inputs["reference"],
+                            'orderNumber' => $jsonRes->orderNumber
                         ]
                     );
                 }

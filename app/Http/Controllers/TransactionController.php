@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use App\Models\transaction;
 use Illuminate\Http\Request;
+use App\Models\contreventionUser;
 use App\Http\Requests\StoretransactionRequest;
 use App\Http\Requests\UpdatetransactionRequest;
-use App\Models\contreventionUser;
 
 class TransactionController extends Controller
 {
@@ -25,57 +26,79 @@ class TransactionController extends Controller
     {
         //
     }
+    public function checkTransactionStatus(Request $request)
+    {
+        $reference = $request->query('reference');
+
+        $transaction = Transaction::where('reference', $reference)->first();
+
+        if ($transaction) {
+            return response()->json([
+                'reponse' => true,
+                'status' => $transaction->status,
+            ]);
+        }
+
+        return response()->json([
+            'reponse' => false,
+            'message' => 'Transaction non trouvée.',
+        ]);
+    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        $data = $request->all();
 
-        $data = file_get_contents('php://input'); 
-	$json = json_decode($request, true); 
-	$reference = $json['reference']; 
-	$code = $json['code'];
-	$order_number = $json['order_number'];
-	$createdAt = $json['createdAt'];
-	$channel = $json['channel'];
-	$amount = $json['amount'];
-	$currency = $json['currency'];
-	$status = $json['status'];
-	$message = $json['message'];
-	
-	$myfile = fopen("callback.txt", "w") or die("Unable to open file!"); // Fichier Callback.txt à créer
-	
-	fwrite($myfile, "Reference : ".$reference."\n");
-	fwrite($myfile, "Code : ".$code."\n");
-	fwrite($myfile, "Order number : ".$order_number."\n");
-	fwrite($myfile, "Date requête : ".$createdAt."\n");
-	fwrite($myfile, "Canal paiement : ".$channel."\n");
-	fwrite($myfile, "Montant payé : ".$amount."\n");
-	fwrite($myfile, "Devise paiement : ".$currency."\n");
-	fwrite($myfile, "Statut transaction : ".$status."\n");
-	fwrite($myfile, "Message : ".$message."\n");
+        // Log des données pour le débogage
+        Log::info('Callback reçu : ', $data);
 
-	fclose($myfile);
+        // $data = file_get_contents('php://input');
+        // $json = json_decode($request, true);
+        // $reference = $json['reference'];
+        // $code = $json['code'];
+        // $order_number = $json['order_number'];
+        // $createdAt = $json['createdAt'];
+        // $channel = $json['channel'];
+        // $amount = $json['amount'];
+        // $currency = $json['currency'];
+        // $status = $json['status'];
+        // $message = $json['message'];
 
-        $user_id = is_numeric(explode('-', $request->reference)[2]) ? (int) explode('-', $request->reference)[2] : null;
-        $cart_id = is_numeric(explode('-', $request->reference)[3]) ? (int) explode('-', $request->reference)[3] : null;
-        $donation_id = is_numeric(explode('-', $request->reference)[4]) ? (int) explode('-', $request->reference)[4] : null;
+        // $myfile = fopen("callback.txt", "w") or die("Unable to open file!"); // Fichier Callback.txt à créer
+
+        // fwrite($myfile, "Reference : " . $reference . "\n");
+        // fwrite($myfile, "Code : " . $code . "\n");
+        // fwrite($myfile, "Order number : " . $order_number . "\n");
+        // fwrite($myfile, "Date requête : " . $createdAt . "\n");
+        // fwrite($myfile, "Canal paiement : " . $channel . "\n");
+        // fwrite($myfile, "Montant payé : " . $amount . "\n");
+        // fwrite($myfile, "Devise paiement : " . $currency . "\n");
+        // fwrite($myfile, "Statut transaction : " . $status . "\n");
+        // fwrite($myfile, "Message : " . $message . "\n");
+
+        // fclose($myfile);
+
+        // $user_id = is_numeric(explode('-', $request->reference)[2]) ? (int) explode('-', $request->reference)[2] : null;
+        // $cart_id = is_numeric(explode('-', $request->reference)[3]) ? (int) explode('-', $request->reference)[3] : null;
+        // $donation_id = is_numeric(explode('-', $request->reference)[4]) ? (int) explode('-', $request->reference)[4] : null;
         // Check if payment already exists
-        $payment = transaction::where('order_number', operator: $request->orderNumber)->first();
-        
+        $payment = transaction::where('reference', operator: $request->reference)->first();
+
         // If payment exists
-        // if ($payment != null) {
+        if ($payment != null) {
             $contre = contreventionUser::where('reference', $request->reference)->first();
 
             $contre->update([
-                'etat' => $request->code===0?'1':'0',
+                'etat' => $request->code === 0 ? '1' : '0',
                 'updated_at' => now()
             ]);
             $payment->update([
                 'reference' => $request->reference,
                 'provider_reference' => $request->provider_reference,
-                'order_number' => $request->orderNumber,
+                'order_number' => $request->order_number,
                 'amount' => $request->amount,
                 'amount_customer' => $request->amountCustomer,
                 'phone' => $request->phone,
@@ -92,28 +115,29 @@ class TransactionController extends Controller
                 ]
             );
             // Otherwise, create new payment
-        // } else {
+            // } else {
 
-        //     $payment = transaction::create([
-        //         'reference' => $request->reference,
-        //         'provider_reference' => $request->provider_reference,
-        //         'order_number' => $request->orderNumber,
-        //         'amount' => $request->amount,
-        //         'amount_customer' => $request->amountCustomer,
-        //         'phone' => $request->phone,
-        //         'currency' => $request->currency,
-        //         'chanel' => $request->channel,
-        //         'created_at' => $request->createdAt,
-        //         'type_id' => $request->type,
-        //         'etat' => $request->code
-        //     ]);
-        //     return response()->json(
-        //         [
-        //             'reponse' => true,
-        //             'msg' => 'Le paiement effectué'
-        //         ]
-        //     );
-        // }
+            //     $payment = transaction::create([
+            //         'reference' => $request->reference,
+            //         'provider_reference' => $request->provider_reference,
+            //         'order_number' => $request->orderNumber,
+            //         'amount' => $request->amount,
+            //         'amount_customer' => $request->amountCustomer,
+            //         'phone' => $request->phone,
+            //         'currency' => $request->currency,
+            //         'chanel' => $request->channel,
+            //         'created_at' => $request->createdAt,
+            //         'type_id' => $request->type,
+            //         'etat' => $request->code
+            //     ]);
+            //     return response()->json(
+            //         [
+            //             'reponse' => true,
+            //             'msg' => 'Le paiement effectué'
+            //         ]
+            //     );
+        } else {
+        }
     }
     public function findByPhone($phone_number)
     {
