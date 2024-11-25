@@ -12,6 +12,7 @@ Route::post('searchMatricule', action: [ContreventionController::class, 'searchM
 Route::post('paieInfraction', action: [ContreventionController::class, 'paieInfraction'])->name('paieInfraction');
 Route::post('authAgent', action: [ContreventionController::class, 'create'])->name(name: 'authAgent');
 Route::post('registerInfra', action: [ContreventionController::class, 'store'])->name(name: 'registerInfra');
+
 Route::post('storeTransaction', action: [TransactionController::class, 'store'])->name(name: 'storeTransaction');
 
 Route::post('sms', action: [TransactionController::class, 'sms'])->name(name: 'sms');

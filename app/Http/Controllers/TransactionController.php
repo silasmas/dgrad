@@ -28,6 +28,13 @@ class TransactionController extends Controller
     }
     public function checkTransactionStatus(Request $request)
     {
+
+        $data = [
+            'timestamp' => now(),
+            'reference' => $request->input('reference'),
+        ];
+
+        \Log::info('Callback reçu avec détails : ', $data);
         $reference = $request->query('reference');
 
         $transaction = Transaction::where('reference', $reference)->first();
@@ -50,6 +57,13 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
+        $data = [
+            'timestamp' => now(),
+            'reference' => $request->input('reference'),
+            'status' => $request->input('status'),
+        ];
+
+        \Log::info('Callback reçu avec détails : ', $data);
         $data = $request->all();
 
         // Log des données pour le débogage

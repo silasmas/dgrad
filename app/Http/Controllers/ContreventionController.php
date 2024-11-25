@@ -162,6 +162,12 @@ class ContreventionController extends Controller
                 }
             }
         } elseif ($request->toggleOption === "mobile") {
+            $data = [
+                'timestamp' => now(),
+                'reference' => $request->input('reference'),
+            ];
+
+            \Log::info('Callback reçu avec détails : ', $data);
             // Create response by sending request to FlexPay
             $data = array(
                 'merchant' => env("FLEXPAY_MARCHAND"),
@@ -229,7 +235,7 @@ class ContreventionController extends Controller
                             [
                                 'order_number' => $jsonRes->orderNumber,
                                 'amount' => $inputs['amount'],
-                                'phone' => $request->other_phone,
+                                'phone' => $inputs['other_phone'],
                                 'currency' => $inputs['currency'],
                                 'type_id' => $inputs["transaction_type_id"],
                             ]
