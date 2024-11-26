@@ -234,7 +234,7 @@ page-title-->
                             icon: 'warning'
                         });
                        if( data.type=="mobile"){
-                           check(data.reference);
+                           check(data.orderNumber);
                         }else{
                             document.location=data.data.result_response.url;
                         }

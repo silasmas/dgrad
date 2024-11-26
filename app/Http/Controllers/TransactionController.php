@@ -28,7 +28,46 @@ class TransactionController extends Controller
     }
     public function checkTransactionStatus(Request $request)
     {
+        $reference = $request->input('reference');
 
+        // Construire l'URL avec le paramètre de requête
+        $url = 'https://backend.flexpay.cd/api/rest/v1/check/?orderNumber=' . urlencode($reference);
+        // $url = env('FLEXPAY_GATEWAY_CHECK') . '?orderNumber=' . urlencode($reference);
+
+        $curl = curl_init($url);
+
+        // Définir les options de cURL pour GET
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . env('FLEXPAY_API_TOKEN'),
+        ]);
+
+        // Exécuter la requête
+        $curlResponse = curl_exec($curl);
+
+        // Gérer les erreurs de cURL
+        if (curl_errno($curl)) {
+            $errorMessage = curl_error($curl);
+            \Log::error("Erreur cURL : " . $errorMessage);
+            return response()->json(['error' => 'Erreur de connexion au service FlexPay'], 500);
+        }
+
+        curl_close($curl);
+
+        // Valider et traiter la réponse
+        $jsonRes = json_decode($curlResponse, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            \Log::error("Erreur de décodage JSON : " . json_last_error_msg());
+            return response()->json(['error' => 'Réponse invalide du service FlexPay'], 500);
+        }
+
+        // Enregistrer la réponse pour le débogage
+        \Log::info('Réponse FlexPay reçue : ', $jsonRes);
+
+
+
+        dd($jsonRes);
         $data = [
             'timestamp' => now(),
             'reference' => $request->input('reference'),
