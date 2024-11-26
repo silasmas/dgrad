@@ -286,6 +286,7 @@ class ContreventionController extends Controller
                     [
                         'reponse' => false,
                         'msg' => $jsonRes['message'],
+                        'type' => "carte",
                         'data' => $jsonRes['error']
                     ]
                 );
@@ -295,6 +296,7 @@ class ContreventionController extends Controller
                         [
                             'reponse' => false,
                             'msg' => $jsonRes['message'],
+                            'type' => "carte",
                             'data' => $code
                         ]
                     );
@@ -306,6 +308,7 @@ class ContreventionController extends Controller
                     $object->result_response = [
                         'message' => $message,
                         'order_number' => $orderNumber,
+                        'type' => "carte",
                         'url' => $url
                     ];
 
@@ -333,7 +336,7 @@ class ContreventionController extends Controller
                         [
                             'reponse' => true,
                             'msg' => 'Vous serez rediriger pour payé dans quelques instant!',
-                            'type' => "mobile",
+                            'type' => "carte",
                             'reference' => $inputs["reference"],
                             'orderNumber' => $jsonRes->orderNumber
                         ]
