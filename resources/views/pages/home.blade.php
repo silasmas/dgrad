@@ -297,13 +297,14 @@ page-title-->
                 method: 'GET',
                 data: { reference: transactionReference },
                 success: function (response) {
-                    if (response.reponse && response.status === 'completed') {
+                    if (response.reponse) {
                         // Arrêter l'intervalle
                         clearInterval(interval);
 
                         // Afficher un message ou rediriger
                         Swal.fire({
-                            title: 'Paiement réussi !',
+                            title: "Etat de la transaction.",
+                            text:response.message,
                             icon: 'success'
                         });
                         $("#FormPaiment")[0].reset();
@@ -314,14 +315,14 @@ page-title-->
                                 $('#interfacePaiement').addClass("d-none");
                                 initRadio();
                         // Rechargez la page ou mettez à jour l'interface
-                        location.reload();
+                        // location.reload();
                     }else if (attempts >= maxAttempts) {
                     // Arrêter les vérifications après le nombre maximum de tentatives
                     clearInterval(interval);
 
                     Swal.fire({
-                        title: 'Vérification interrompue',
-                        text: "Le statut de la transaction n'a pas pu être confirmé. Veuillez réessayer plus tard.",
+                        title: "Etat de la transaction.",
+                        text:response.message,
                         icon: 'error'
                     });
                 }

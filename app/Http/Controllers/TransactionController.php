@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Log;
+use App\Models\User;
 use App\Models\transaction;
 use Illuminate\Http\Request;
 use App\Models\contreventionUser;
@@ -26,13 +27,13 @@ class TransactionController extends Controller
     {
         //
     }
+
     public function checkTransactionStatus(Request $request)
     {
         $reference = $request->input('reference');
 
         // Construire l'URL avec le paramètre de requête
-        $url = 'https://backend.flexpay.cd/api/rest/v1/check/?orderNumber=' . urlencode($reference);
-        // $url = env('FLEXPAY_GATEWAY_CHECK') . '?orderNumber=' . urlencode($reference);
+        $url = 'https://backend.flexpay.cd/api/rest/v1/check/' . urlencode($reference);
 
         $curl = curl_init($url);
 
@@ -54,7 +55,7 @@ class TransactionController extends Controller
 
         curl_close($curl);
 
-        // Valider et traiter la réponse
+        // Valider et traiter la réponse JSON
         $jsonRes = json_decode($curlResponse, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -62,34 +63,144 @@ class TransactionController extends Controller
             return response()->json(['error' => 'Réponse invalide du service FlexPay'], 500);
         }
 
-        // Enregistrer la réponse pour le débogage
-        \Log::info('Réponse FlexPay reçue : ', $jsonRes);
-
-
-
-        dd($jsonRes);
-        $data = [
-            'timestamp' => now(),
-            'reference' => $request->input('reference'),
-        ];
-
-        \Log::info('détails check: ', $data);
-        $reference = $request->query('reference');
-
-        $transaction = Transaction::where('reference', $reference)->first();
-
-        if ($transaction) {
-            return response()->json([
-                'reponse' => true,
-                'status' => $transaction->status,
-            ]);
+        // Vérifiez que la réponse contient les données attendues
+        if (!isset($jsonRes['transaction']) || !is_array($jsonRes['transaction'])) {
+            \Log::error('Structure inattendue dans la réponse FlexPay', $jsonRes);
+            return response()->json(['error' => 'Réponse mal formatée du service FlexPay'], 500);
         }
 
-        return response()->json([
-            'reponse' => false,
-            'message' => 'Transaction non trouvée.',
-        ]);
+        // Journaliser la réponse pour le débogage
+        \Log::info('Réponse FlexPay reçue : ', $jsonRes);
+        if ($jsonRes["code"] != 0) {
+            return response()->json([
+                'reponse' => false,
+                'message' => $jsonRes["message"],
+            ]);
+        } else {
+            $transactionData = $jsonRes['transaction'];
+            // Trouver la transaction correspondante
+            $transaction = Transaction::where('reference', $transactionData['reference'])->first();
+
+            if ($transaction) {
+                $contrevention = contreventionUser::where('reference', $transactionData['reference'])->first();
+
+                // Mettre à jour l'état des données
+                $etat = $transactionData['status'] == 0 ? '1' : '0';
+                if ($contrevention) {
+
+                    $contrevention->update([
+                        'etat' => $etat,
+                        'updated_at' => now()
+                    ]);
+
+                    $transaction->update([
+                        'etat' => $etat,
+                        'updated_at' => now()
+                    ]);
+                    $message = new ContreventionController();
+                    $user = User::where("matricule", $contrevention->matricule)->first();
+                    $messages = $user->fisrtname . " " . $user->name . " votre contrevention de reference " . $contrevention->reference . " à été soldée !";
+
+                    $message->sendSms($user->phone, $messages);
+                    return response()->json([
+                        'reponse' => $etat == '1' ? true : false,
+                        'message' => $jsonRes['message'] ?? 'Statut de transaction mis à jour avec succès.',
+                        'status' => $transactionData['status'],
+                    ]);
+                } else {
+                    return response()->json([
+                        'reponse' => false,
+                        'message' => 'Contrevention non trouvée.',
+                        'status' => $transactionData['status'],
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'reponse' => false,
+                    'message' => 'Transaction non trouvée.',
+                    'status' => $transactionData['status'],
+                ]);
+            }
+        }
+        // dd($jsonRes["transaction"]);
     }
+
+
+    // public function checkTransactionStatus(Request $request)
+    // {
+    //     $reference = $request->input('reference');
+
+    //     // Construire l'URL avec le paramètre de requête
+    //     $url = 'https://backend.flexpay.cd/api/rest/v1/check/' . urlencode($reference);
+    //     // $url = env('FLEXPAY_GATEWAY_CHECK') . '?orderNumber=' . urlencode($reference);
+
+    //     $curl = curl_init($url);
+
+    //     // Définir les options de cURL pour GET
+    //     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($curl, CURLOPT_HTTPHEADER, [
+    //         'Authorization: Bearer ' . env('FLEXPAY_API_TOKEN'),
+    //     ]);
+
+    //     // Exécuter la requête
+    //     $curlResponse = curl_exec($curl);
+
+    //     // Gérer les erreurs de cURL
+    //     if (curl_errno($curl)) {
+    //         $errorMessage = curl_error($curl);
+    //         \Log::error("Erreur cURL : " . $errorMessage);
+    //         return response()->json(['error' => 'Erreur de connexion au service FlexPay'], 500);
+    //     }
+
+    //     curl_close($curl);
+
+    //     // Valider et traiter la réponse
+    //     $jsonRes = json_decode($curlResponse, true);
+
+    //     if (json_last_error() !== JSON_ERROR_NONE) {
+    //         \Log::error("Erreur de décodage JSON : " . json_last_error_msg());
+    //         return response()->json(['error' => 'Réponse invalide du service FlexPay'], 500);
+    //     }
+
+    //     // Enregistrer la réponse pour le débogage
+    //     \Log::info('Réponse FlexPay reçue : ', $jsonRes[2]);
+
+
+
+    //     dd($jsonRes);
+    //     // $data = [
+    //     //     'timestamp' => now(),
+    //     //     'reference' => $request->input('reference'),
+    //     // ];
+
+    //     // \Log::info('détails check: ', $data);
+    //     // $reference = $request->query('reference');
+
+    //     $transaction = Transaction::where('reference', $jsonRes->transaction->reference)->first();
+
+    //     if ($transaction) {
+    //         $contrevention = contreventionUser::where('reference', $jsonRes->transaction->reference)->first();
+
+    //         $contrevention->update([
+    //             'etat' => $jsonRes->transaction->status === 0 ? '1' : '0',
+    //             'updated_at' => now()
+    //         ]);
+    //         $transaction->update([
+    //             'etat' => $jsonRes->transaction->status === 0 ? '1' : '0',
+    //             'updated_at' => now()
+    //         ]);
+    //         return response()->json([
+    //             'reponse' => $jsonRes->transaction->status === 0 ? true : false,
+    //             'message' => $jsonRes->message,
+    //             'status' => $jsonRes->transaction->status,
+    //         ]);
+    //     }
+
+    //     return response()->json([
+    //         'reponse' => false,
+    //         'message' => 'Transaction non trouvée.',
+    //     ]);
+    // }
 
     /**
      * Store a newly created resource in storage.
