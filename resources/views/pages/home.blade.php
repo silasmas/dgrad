@@ -236,7 +236,8 @@ page-title-->
                        if( data.type=="mobile"){
                            check(data.orderNumber);
                         }else{
-                            document.location=data.data.result_response.url;
+                            console.error("url", data.url);
+                            document.location=data.url;
                         }
                     }
                 },

@@ -332,13 +332,14 @@ class ContreventionController extends Controller
                             ]
                         );
                     }
+                    // dd($jsonRes);
                     return response()->json(
                         [
                             'reponse' => true,
                             'msg' => 'Vous serez rediriger pour payé dans quelques instant!',
                             'type' => "carte",
                             'reference' => $inputs["reference"],
-                            'orderNumber' => $jsonRes->orderNumber
+                            'url' => $jsonRes['url']
                         ]
                     );
                 }
