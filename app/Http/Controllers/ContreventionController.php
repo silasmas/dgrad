@@ -225,11 +225,11 @@ class ContreventionController extends Controller
                     ];
                     Log::info('retour info détails : ',   $object->result_response);
                     // $contre = contreventionUser::where('reference', $inputs["reference"])->first();
-                    // // The donation is registered only if the processing succeed
+                    // // // The donation is registered only if the processing succeed
                     // $contre->update(['etat' => '1']);
 
                     // // Register payment, even if FlexPay will
-                    $payment = transaction::where('order_number', $jsonRes->orderNumber)->first();
+                    $payment = transaction::where([['order_number', $jsonRes->orderNumber], ['reference', $inputs["reference"]]])->first();
 
                     if (is_null($payment)) {
                         transaction::updateOrCreate(
@@ -242,16 +242,16 @@ class ContreventionController extends Controller
                                 'type_id' => $inputs["transaction_type_id"],
                             ]
                         );
+                        return response()->json(
+                            [
+                                'reponse' => true,
+                                'msg' => 'Veuillez validé votre paiement sur votre téléphone!',
+                                'type' => "mobile",
+                                'reference' => $inputs["reference"],
+                                'orderNumber' => $jsonRes->orderNumber
+                            ]
+                        );
                     }
-                    return response()->json(
-                        [
-                            'reponse' => true,
-                            'msg' => 'Veuillez validé votre paiement sur votre téléphone!',
-                            'type' => "mobile",
-                            'reference' => $inputs["reference"],
-                            'orderNumber' => $jsonRes->orderNumber
-                        ]
-                    );
                 }
             }
         } else {

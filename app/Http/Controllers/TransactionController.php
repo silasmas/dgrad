@@ -34,7 +34,7 @@ class TransactionController extends Controller
             'reference' => $request->input('reference'),
         ];
 
-        \Log::info('Callback reçu avec détails check: ', $data);
+        \Log::info('détails check: ', $data);
         $reference = $request->query('reference');
 
         $transaction = Transaction::where('reference', $reference)->first();
@@ -57,6 +57,7 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
+        \Log::info('Callback reçu : ', "retour callback");
         $data = [
             'timestamp' => now(),
             'reference' => $request->input('reference'),
