@@ -97,11 +97,13 @@ class TransactionController extends Controller
                         'etat' => $etat,
                         'updated_at' => now()
                     ]);
-                    $message = new ContreventionController();
-                    $user = User::where("matricule", $contrevention->matricule)->first();
-                    $messages = $user->fisrtname . " " . $user->name . " votre contrevention de reference " . $contrevention->reference . " à été soldée !";
+                    if($etat =='1'&&$jsonRes["code"]==0){
+                        $message = new ContreventionController();
+                        $user = User::where("matricule", $contrevention->matricule)->first();
+                        $messages = $user->fisrtname . " " . $user->name . " votre contrevention de reference " . $contrevention->reference . " à été soldée !";
 
-                    $message->sendSms($user->phone, $messages);
+                        $message->sendSms($user->phone, $messages);
+                    }
                     return response()->json([
                         'reponse' => $etat == '1' ? true : false,
                         'message' => $jsonRes['message'] ?? 'Statut de transaction mis à jour avec succès.',
