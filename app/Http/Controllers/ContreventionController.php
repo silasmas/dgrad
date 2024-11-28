@@ -263,9 +263,9 @@ class ContreventionController extends Controller
                 'currency' => $inputs['currency'],
                 'description' => "Paiemen d'une contrevention",
                 'callback_url' => env('APP_URL') . 'storeTransaction',
-                'approve_url' =>  env('APP_URL') . 'paid/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0',
-                'cancel_url' =>  env('APP_URL') . 'paid/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1',
-                'decline_url' =>  env('APP_URL') . 'paid/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2',
+                'approve_url' =>  env('APP_URL') . 'paid/' . $inputs['reference'] . '/' . $inputs['amount'] . '/' . $inputs['currency'] . '/0',
+                'cancel_url' =>  env('APP_URL') . 'paid/' . $inputs['reference'] . '/' . $inputs['amount'] . '/' . $inputs['currency'] . '/1',
+                'decline_url' =>  env('APP_URL') . 'paid/' . $inputs['reference'] . '/' . $inputs['amount'] . '/' . $inputs['currency'] . '/2',
                 'home_url' =>  env('APP_URL') . 'home',
             ));
 
@@ -347,11 +347,34 @@ class ContreventionController extends Controller
         }
     }
 
-    public function paid($amount = null, $currency = null, $code)
+    public function paid($ref = null, $amount = null, $currency = null, $code)
     {
+        $sendSms = false;
         // Find status by name API
         if ($code == '0') {
-            return view('transaction_message', [
+            if ($code == 0 && $sendSms == false) {
+                $conv =  contreventionUser::where('reference', $ref)->first();
+                $transaction =  transaction::where('reference', $ref)->first();
+
+                $conv->update([
+                    'etat' => '1',
+                    'updated_at' => now()
+                ]);
+
+                $transaction->update([
+                    'etat' => '1',
+                    'updated_at' => now()
+                ]);
+                $user = User::where("matricule", $conv->matricule)->first();
+                $messages = $user->fisrtname . " " . $user->name . " votre contrevention de reference " . $conv->reference . " à été soldée !";
+
+                $this->sendSms($user->phone, $messages);
+                $conv->update([
+                    'sms' => 1,
+                ]);
+                $sendSms = true;
+            }
+            return view('pages.transaction_message', [
                 'status_code' => $code,
                 'message_content' => "Transaction effectuée"
             ]);

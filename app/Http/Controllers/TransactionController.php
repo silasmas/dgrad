@@ -58,19 +58,9 @@ class TransactionController extends Controller
         // Valider et traiter la réponse JSON
         $jsonRes = json_decode($curlResponse, true);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            \Log::error("Erreur de décodage JSON : " . json_last_error_msg());
-            return response()->json(['error' => 'Réponse invalide du service FlexPay'], 500);
-        }
 
-        // Vérifiez que la réponse contient les données attendues
-        if (!isset($jsonRes['transaction']) || !is_array($jsonRes['transaction'])) {
-            \Log::error('Structure inattendue dans la réponse FlexPay', $jsonRes);
-            return response()->json(['error' => 'Réponse mal formatée du service FlexPay'], 500);
-        }
-
-        // Journaliser la réponse pour le débogage
-        \Log::info('Réponse FlexPay reçue : ', $jsonRes);
+        // // Journaliser la réponse pour le débogage
+        // \Log::info('Réponse FlexPay reçue : ', $jsonRes);
         if ($jsonRes["code"] != 0) {
             return response()->json([
                 'reponse' => false,
@@ -97,17 +87,21 @@ class TransactionController extends Controller
                         'etat' => $etat,
                         'updated_at' => now()
                     ]);
-                    if($etat =='1'&&$jsonRes["code"]==0){
+                    if ($etat == '1' && $jsonRes["code"] == 0 && $contrevention->sms == 0) {
                         $message = new ContreventionController();
                         $user = User::where("matricule", $contrevention->matricule)->first();
                         $messages = $user->fisrtname . " " . $user->name . " votre contrevention de reference " . $contrevention->reference . " à été soldée !";
 
                         $message->sendSms($user->phone, $messages);
+                        $contrevention->update([
+                            'sms' => 1,
+                        ]);
                     }
                     return response()->json([
                         'reponse' => $etat == '1' ? true : false,
                         'message' => $jsonRes['message'] ?? 'Statut de transaction mis à jour avec succès.',
                         'status' => $transactionData['status'],
+                        'sms' => $contrevention->sms,
                     ]);
                 } else {
                     return response()->json([

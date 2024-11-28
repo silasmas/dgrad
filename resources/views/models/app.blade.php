@@ -12,7 +12,7 @@
     <title>DGRAD</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="images/favicon.ico" />
+    <link rel="shortcut icon" href="{{ asset('assets/images/logo.png') }}" />
 
     <!-- font -->
     <link rel="stylesheet"

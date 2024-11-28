@@ -139,7 +139,8 @@ page-title-->
                 title: 'Merci de patienter...',
                 icon: 'info'
             });
-
+                // Retirer le focus du bouton
+                $(this).blur();
             var ref= $('#reference').val();
             $.ajax({
                 url: '../findInfra',
@@ -163,11 +164,13 @@ page-title-->
                         $('#ref').val(data.data.reference.reference);
 
                         $('#interfacePaiement').removeClass("d-none");                    // $("#formIdentite")[0].reset();
-
-                        Swal.fire({
-                            title: data.msg,
-                            icon: 'success'
-                        });
+                         Swal.close();
+                        // Swal.fire({
+                        //     title: data.msg,
+                        //     icon: 'success',
+                        //     timer: 3000, // Fermer après 3 secondes
+                        //     timerProgressBar: true // Afficher une barre de progression
+                        // });
                         scrol();
                     }
                 },
@@ -186,13 +189,17 @@ page-title-->
          // Cible l'élément à atteindre
          const targetElement = document.getElementById("focus");
          // Bouton pour afficher le popup
-        const showPopupBtn = document.getElementById("showPopup");
+        // const showPopupBtn = document.getElementById("showPopup");
 
         // Variable pour sauvegarder la position de défilement
         // Défile jusqu'à la fin de la page
-        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        // window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 
-
+// Scroller jusqu'à la fin de la page
+window.scrollTo({
+        top: document.body.scrollHeight, // Hauteur totale de la page
+        behavior: 'smooth' // Défilement fluide
+    });
     }
     function initRadio(){
          // Sélectionne tous les boutons radio du formulaire et les désélectionne
@@ -290,24 +297,36 @@ page-title-->
         // Démarrer un intervalle pour vérifier l'état de la transaction
         const transactionReference = reference; // Remplacez par la vraie référence
         let attempts = 0; // Compteur de tentatives
-        const maxAttempts = 10; // Limite du nombre de tentatives
+        const maxAttempts = 5; // Limite du nombre de tentatives
+
+        // Fonction pour arrêter tout (intervalle et compteur de tentatives)
+    const stopChecking = (message, icon = 'info',sms=0) => {
+        clearInterval(interval); // Arrête l'intervalle
+        attempts = maxAttempts; // Définit les tentatives au maximum pour indiquer la fin
+        var message=sms==1?" Un Sms à été envoyé au proprietaire!!":'';
+        Swal.fire({
+            title: "Etat de la transaction.",
+            text: message + message,
+            icon: icon
+        });
+    };
         const interval = setInterval(() => {
             attempts++;
+            console.log("quota : "+attempts)
             $.ajax({
                 url: '/checkTransactionStatus', // Route qui vérifie le statut
                 method: 'GET',
                 data: { reference: transactionReference },
                 success: function (response) {
-                    if (response.reponse) {
+                    console.log("retour : "+response.reponse)
+                    console.log("retour sms : "+response.sms)
+                    if (response.reponse==true) {
                         // Arrêter l'intervalle
                         clearInterval(interval);
 
                         // Afficher un message ou rediriger
-                        Swal.fire({
-                            title: "Etat de la transaction.",
-                            text:response.message,
-                            icon: 'success'
-                        });
+
+                        stopChecking(response.message || "La transaction a été complétée avec succès.", 'success',response.sms);
                         $("#FormPaiment")[0].reset();
                                 $("#formSearchRef")[0].reset();
                                 $('#identite').text("");
@@ -316,8 +335,8 @@ page-title-->
                                 $('#interfacePaiement').addClass("d-none");
                                 initRadio();
                         // Rechargez la page ou mettez à jour l'interface
-                        // location.reload();
-                    }else if (attempts >= maxAttempts) {
+                         location.reload();
+                    }else if (!response.reponse && attempts >= maxAttempts) {
                     // Arrêter les vérifications après le nombre maximum de tentatives
                     clearInterval(interval);
 
@@ -331,14 +350,8 @@ page-title-->
                 error: function () {
                     console.error('Erreur lors de la vérification du statut.');
                     if (attempts >= maxAttempts) {
-                    // Arrêter les vérifications en cas d'erreurs répétées
-                    clearInterval(interval);
-
-                    Swal.fire({
-                        title: 'Erreur',
-                        text: "Impossible de vérifier le statut de la transaction. Veuillez réessayer.",
-                        icon: 'error'
-                    });
+                     // Arrêter après des erreurs répétées et atteindre la limite
+                     stopChecking("Impossible de vérifier le statut de la transaction. Veuillez réessayer.", 'error');
                 }
                 }
             });
